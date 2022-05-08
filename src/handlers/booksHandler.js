@@ -100,11 +100,19 @@ const getAllBooks = (request, h) => {
       });
     }
 
-    resultQuery = resultQuery.map(({ id, name, publisher }) => ({
-      id,
-      name,
-      publisher,
-    }));
+    if (resultQuery.length > 0) {
+      resultQuery = resultQuery.map(({ id, name, publisher }) => ({
+        id,
+        name,
+        publisher,
+      }));
+    } else {
+      resultQuery = books.map(({ id, name, publisher }) => ({
+        id,
+        name,
+        publisher,
+      }));
+    }
 
     return h.response({
       status: 'success',
