@@ -76,42 +76,41 @@ const addBook = (request, h) => {
 
 const getAllBooks = (request, h) => {
   try {
-    // const nameQuery = request.query.name;
-    // const readingQuery = request.query.reading;
-    // const finishedQuery = request.query.finished;
+    const nameQuery = request.query.name;
+    const readingQuery = request.query.reading;
+    const finishedQuery = request.query.finished;
 
-    const newArrayBooks = books.map(({ id, name, publisher }) => ({
+    let resultQuery = [];
+
+    if (nameQuery !== undefined) {
+      resultQuery = books.filter((b) => b.name.toLowerCase().includes(nameQuery.toLowerCase()));
+    } else if (readingQuery !== undefined) {
+      resultQuery = books.filter((b) => {
+        if (Number(readingQuery) === 0 || Number(readingQuery) === 1) {
+          return Number(b.reading) === Number(readingQuery);
+        }
+        return true;
+      });
+    } else if (finishedQuery !== undefined) {
+      resultQuery = books.filter((b) => {
+        if (Number(finishedQuery) === 0 || Number(finishedQuery) === 1) {
+          return Number(b.finished) === Number(finishedQuery);
+        }
+        return true;
+      });
+    }
+
+    resultQuery = resultQuery.map(({ id, name, publisher }) => ({
       id,
       name,
       publisher,
     }));
 
-    // books.filter((b) => {
-    //   let a = true;
-    //   let c = true;
-    //   let d = true;
-
-    //   if (nameQuery !== undefined) {
-    //     a = b.name.toLowerCase() === nameQuery.toLowerCase();
-    //   }
-
-    //   if (readingQuery !== undefined) {
-    //     if (readingQuery === 0 || readingQuery === 1) {
-    //       c = Number(b.reading) === readingQuery;
-    //     }
-    //   }
-
-    //   if (finishedQuery !== undefined) {
-    //     if (finishedQuery === 0 || finishedQuery === 1) {
-    //       d = Number(b.finished) === finishedQuery;
-    //     }
-    //   }
-
-    // });
-
     return h.response({
       status: 'success',
-      data: { books: newArrayBooks },
+      data: {
+        books: resultQuery,
+      },
     });
   } catch (error) {
     return errorHandling(h, 500, 'error', error.message);
